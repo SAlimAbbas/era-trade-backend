@@ -1,0 +1,49 @@
+# Laravel dependencies & vendor
+/vendor
+/node_modules
+
+# Environment secrets
+.env
+.env.backup
+.env.production
+.env.local
+.env.*
+!.env.example
+
+# Large image & upload directories (security & repo size optimization)
+/public/storage
+/public/uploads
+/public/productsImgs
+/public/categories
+/public/suppliers
+/storage/app/public/products
+/storage/app/public/suppliers
+/storage/app/public/categories
+/storage/app/public/uploads
+
+# Storage & Logs
+/*.log
+/storage/logs/*.log
+/storage/*.key
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/pail
+
+# Build assets
+/public/build
+/public/hot
+
+# IDE & OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.nova/
+.zed/
+.fleet/
+.phpunit.result.cache
+.phpunit.cache
+/auth.json
+Homestead.json
+Homestead.yaml
