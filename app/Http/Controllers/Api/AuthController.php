@@ -112,10 +112,10 @@ class AuthController extends Controller
     public function registerUser(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:50',
-            'email' => 'required|email|unique:users,email|max:50',
+            'name' => 'required|string|max:100',
+            'email' => 'required|email|unique:users,email|unique:buyers,email|unique:supplier,Email|max:100',
             'password' => 'required|string|min:6|max:200',
-            'phone' => 'required|string|max:15',
+            'phone' => 'required|string|max:20',
             'country' => 'required|string|max:200',
             'state' => 'nullable|string|max:100',
             'city' => 'nullable|string|max:100',
@@ -130,6 +130,7 @@ class AuthController extends Controller
         $email = strtolower(trim($request->email));
         $membertype = strtolower($request->input('membertype', 'supplier'));
 
+        // 1. Create primary account in USERS table FIRST
         $userData = [
             'name' => $request->name,
             'email' => $email,
@@ -156,12 +157,12 @@ class AuthController extends Controller
         ];
         $user = User::create($userData);
 
-        // If company details provided during registration, store in supplier table
-        if ($membertype === 'supplier' && $request->filled('company_name')) {
+        // 2. Create corresponding record in SUPPLIERS or BUYERS table
+        if ($membertype === 'supplier') {
             \App\Models\Supplier::create([
                 'SuplierID' => 'SUP-' . strtoupper(\Illuminate\Support\Str::random(8)),
                 'Name' => $request->name,
-                'CompanyName' => $request->company_name,
+                'CompanyName' => $request->company_name ?? ($request->name . ' Exports'),
                 'Email' => $email,
                 'Contact' => $request->phone,
                 'Country' => $request->country,
@@ -188,6 +189,16 @@ class AuthController extends Controller
                 'created_at' => now()->toDateString(),
                 'updated_at' => now(),
             ]);
+        } else if ($membertype === 'buyer') {
+            Buyer::create([
+                'name' => $request->name,
+                'email' => $email,
+                'password' => Hash::make($request->password),
+                'phone' => $request->phone,
+                'country' => $request->country,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
 
         $token = $user->createToken('supplier-token')->plainTextToken;
@@ -212,7 +223,7 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:100',
-            'email' => 'required|email|unique:users,email|max:100',
+            'email' => 'required|email|unique:users,email|unique:buyers,email|max:100',
             'password' => 'required|string|min:6|max:255',
             'phone' => 'required|string|max:20',
             'country' => 'required|string|max:50',
