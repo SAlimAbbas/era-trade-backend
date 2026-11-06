@@ -45,5 +45,8 @@ Thumbs.db
 .phpunit.result.cache
 .phpunit.cache
 /auth.json
-Homestead.json
-Homestead.yaml
+# Deployment scripts & sensitive configs
+deploy*.sh
+deploy*.ps1
+deploy*.bat
+.deploy*

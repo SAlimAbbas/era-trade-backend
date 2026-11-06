@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\SupplierDashboardController;
 use App\Http\Controllers\Api\GeneralPagesController;
 use App\Http\Controllers\Api\ContactRevealController;
+use App\Http\Controllers\Api\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,4 +87,27 @@ Route::middleware('auth:sanctum')->group(function () {
     // RFQs (Leads) for suppliers
     Route::get('/my-inquiries', [InquiryController::class, 'getBuyerInquiries']);
     Route::post('/reveal-contact', [ContactRevealController::class, 'reveal']);
+});
+
+// ==========================================
+// 6. Admin Portal Routes
+// ==========================================
+Route::prefix('admin')->group(function () {
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/leads/sample-csv', [AdminController::class, 'downloadSampleCsv']);
+    
+    // Protected admin routes
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/metrics', [AdminController::class, 'getMetrics']);
+        Route::get('/leads/form-data', [AdminController::class, 'getLeadFormData']);
+        Route::post('/leads/single', [AdminController::class, 'storeSingleLead']);
+        Route::post('/leads/bulk', [AdminController::class, 'bulkUploadLeads']);
+        
+        // Blog Management
+        Route::get('/blogs', [AdminController::class, 'getAdminBlogs']);
+        Route::get('/blogs/{id}', [AdminController::class, 'getAdminBlog']);
+        Route::post('/blogs', [AdminController::class, 'storeBlog']);
+        Route::put('/blogs/{id}', [AdminController::class, 'updateBlog']);
+        Route::delete('/blogs/{id}', [AdminController::class, 'deleteBlog']);
+    });
 });
